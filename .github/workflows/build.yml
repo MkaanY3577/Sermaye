@@ -47,7 +47,56 @@ jobs:
           rootProject.name = "Sermaye"
           include ':app'
           EOF
-          cat app/build.gradle || cat app/build.gradle.kts || echo "APP BUILD YOK!"
+          
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.2.2' apply false
+          }
+          EOF
+
+          if [ ! -f "app/build.gradle" ]; then
+            echo "app/build.gradle YOK, olusturuluyor..."
+            mkdir -p app
+            cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+          android {
+              namespace 'com.sermaye.app'
+              compileSdk 34
+              defaultConfig {
+                  applicationId "com.sermaye.app"
+                  minSdk 24
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0"
+              }
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                  }
+                  debug {
+                      minifyEnabled false
+                  }
+              }
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.1'
+              implementation 'com.google.android.material:material:1.11.0'
+          }
+          EOF
+          else
+            echo "app/build.gradle VAR"
+          fi
+          
+          echo "=== DOSYALAR ==="
+          ls -R
+          echo "=== APP BUILD ==="
+          cat app/build.gradle
 
       - name: APK Derle
         run: gradle assembleDebug --no-daemon --console=plain
