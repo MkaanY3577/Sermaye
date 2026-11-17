@@ -27,17 +27,28 @@ jobs:
         with:
           gradle-version: 8.5
 
-      - name: Dosyalari Goster
+      - name: Eksik Dosyalari Olustur
         run: |
+          echo "=== ONCE NE VAR ===" || true
           ls -la || true
-          echo "--- SDK ---"
-          echo "ANDROID_HOME=$ANDROID_HOME" || true
-          ls "$ANDROID_HOME" || true
-          echo "--- app ---"
-          ls -la app/ || true
+          echo "=== APP VAR MI? ===" || true
+          ls -la app/ || echo "APP KLASORU YOK!" || true
+          if [ ! -f settings.gradle ] && [ ! -f settings.gradle.kts ]; then
+            echo "settings.gradle YOK, olusturuluyor..."
+            echo "include ':app'" > settings.gradle
+            echo "rootProject.name = 'Sermaye'" >> settings.gradle
+            cat settings.gradle || true
+          else
+            echo "settings.gradle VAR" || true
+            cat settings.gradle || true
+          fi
+          if [ ! -f build.gradle ] && [ ! -f build.gradle.kts ]; then
+            echo "ROOT build.gradle YOK, olusturuluyor..."
+            echo "plugins { id 'com.android.application' version '8.2.2' apply false }" > build.gradle
+          fi
 
       - name: APK Derle
-        run: gradle assembleDebug --no-daemon --stacktrace
+        run: gradle assembleDebug --no-daemon --console=plain
 
       - name: APK Yukle
         uses: actions/upload-artifact@v4
