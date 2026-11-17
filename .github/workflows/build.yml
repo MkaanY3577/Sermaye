@@ -22,10 +22,21 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Android SDK Kur
+        uses: android-actions/setup-android@v3
+
       - name: Gradle 8.5 Kur
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.5
+
+      - name: Dosyalari Goster
+        run: |
+          ls -la
+          echo "--- settings ---"
+          cat settings.gradle* || cat settings.gradle.kts || echo "settings yok!"
+          echo "--- app build ---"
+          ls -la app/
 
       - name: APK Derle
         run: gradle assembleDebug --no-daemon --stacktrace
