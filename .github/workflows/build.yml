@@ -1,34 +1,35 @@
 name: Build APK
-on: [push, workflow_dispatch]
-jobs:env:
-  JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
-  GRADLE_OPTS: -Djava.awt.headless=true -Dorg.gradle.daemon=false
-  build:./gradlew assembleDebug --no-daemon
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
     runs-on: ubuntu-latest
+    env:
+      JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
+      GRADLE_OPTS: -Djava.awt.headless=true -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2g
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Kodu Cek
+        uses: actions/checkout@v4
+
+      - name: Java 17 Kur
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Unzip and Build
-        run: |
-          unzip -o sermaye.zip
-          ls -la
-          if [ ! -f "gradlew" ]; then
-            echo "gradle 9.3.1 indiriyorum..."
-            wget -q https://services.gradle.org/distributions/gradle-9.3.1-bin.zip
-            unzip -q gradle-9.3.1-bin.zip
-          fi
-          if [ -f "gradlew" ]; then
-            chmod +x gradlew
-            ./gradlew assembleDebug --no-daemon
-          else
-            $PWD/gradle-9.3.1/bin/gradle assembleDebug --no-daemon
-          fi
-          find . -name "app-debug.apk" -exec cp {} $GITHUB_WORKSPACE/ \;
-          ls -lh $GITHUB_WORKSPACE/*.apk
-      - uses: actions/upload-artifact@v4
+
+      - name: Gradle Izin Ver
+        run: chmod +x gradlew
+
+      - name: APK Derle
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: APK Yukle
+        uses: actions/upload-artifact@v4
         with:
-          name: sermaye-apk
-          path: app-debug.apk
+          name: Sermaye-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
