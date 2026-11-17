@@ -8,25 +8,21 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
       - name: Unzip and Build
         run: |
           unzip -o sermaye.zip
           ls -la
-          # gradlew yoksa gradle indir
           if [ ! -f "gradlew" ]; then
-            echo "gradlew yok, gradle indiriyorum..."
-            wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip
-            unzip -q gradle-8.7-bin.zip
-            export PATH=$PWD/gradle-8.7/bin:$PATH
-          else
-            chmod +x gradlew
+            echo "gradle 9.3.1 indiriyorum..."
+            wget -q https://services.gradle.org/distributions/gradle-9.3.1-bin.zip
+            unzip -q gradle-9.3.1-bin.zip
           fi
-          # build yap
           if [ -f "gradlew" ]; then
-            ./gradlew assembleDebug
+            chmod +x gradlew
+            ./gradlew assembleDebug --no-daemon
           else
-            $PWD/gradle-8.7/bin/gradle assembleDebug --no-daemon
+            $PWD/gradle-9.3.1/bin/gradle assembleDebug --no-daemon
           fi
           find . -name "app-debug.apk" -exec cp {} $GITHUB_WORKSPACE/ \;
           ls -lh $GITHUB_WORKSPACE/*.apk
