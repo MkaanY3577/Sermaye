@@ -12,18 +12,22 @@ jobs:
       - name: Unzip and Build
         run: |
           unzip -o sermaye.zip
-          echo "=== DOSYALAR ==="
-          find . -maxdepth 3 -type d | head -n 50
-          echo "=== SETTINGS ARIYORUM ==="
-          find . -name "settings.gradle*" | head
-          # Gercek proje klasorunu bul
-          APP_DIR=$(find . -name "settings.gradle*" -exec dirname {} \; | head -n 1)
-          if [ -z "$APP_DIR" ]; then APP_DIR="."; fi
-          echo "Proje klasoru: $APP_DIR"
-          cd "$APP_DIR"
           ls -la
-          chmod +x gradlew || true
-          ./gradlew assembleDebug
+          # gradlew yoksa gradle indir
+          if [ ! -f "gradlew" ]; then
+            echo "gradlew yok, gradle indiriyorum..."
+            wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip
+            unzip -q gradle-8.7-bin.zip
+            export PATH=$PWD/gradle-8.7/bin:$PATH
+          else
+            chmod +x gradlew
+          fi
+          # build yap
+          if [ -f "gradlew" ]; then
+            ./gradlew assembleDebug
+          else
+            $PWD/gradle-8.7/bin/gradle assembleDebug --no-daemon
+          fi
           find . -name "app-debug.apk" -exec cp {} $GITHUB_WORKSPACE/ \;
           ls -lh $GITHUB_WORKSPACE/*.apk
       - uses: actions/upload-artifact@v4
