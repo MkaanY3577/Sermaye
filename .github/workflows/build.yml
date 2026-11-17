@@ -11,6 +11,8 @@ jobs:
     env:
       JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
       GRADLE_OPTS: -Djava.awt.headless=true -Dorg.gradle.daemon=false
+      ANDROID_HOME: /usr/lib/android-sdk
+      ANDROID_SDK_ROOT: /usr/lib/android-sdk
 
     steps:
       - name: Kodu Cek
@@ -22,9 +24,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Android SDK Kur
-        uses: android-actions/setup-android@v3
-
       - name: Gradle 8.5 Kur
         uses: gradle/actions/setup-gradle@v3
         with:
@@ -33,9 +32,10 @@ jobs:
       - name: Dosyalari Goster
         run: |
           ls -la
-          echo "--- settings ---"
-          cat settings.gradle* || cat settings.gradle.kts || echo "settings yok!"
-          echo "--- app build ---"
+          echo "--- SDK kontrol ---"
+          ls $ANDROID_HOME || echo "SDK yok, diger yola bakiliyor"
+          ls /opt/android-sdk || ls /usr/local/lib/android/sdk || echo "SDK bulunamadi"
+          echo "--- app ---"
           ls -la app/
 
       - name: APK Derle
