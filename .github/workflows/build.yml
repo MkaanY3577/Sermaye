@@ -205,4 +205,4 @@ jobs:
         with:
           name: Sermaye-APK
           path: app/build/outputs/apk/debug/app-debug.apk
-Atıyorum bunu ya evet de ya hayır de
+
