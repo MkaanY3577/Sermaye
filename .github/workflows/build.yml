@@ -27,25 +27,27 @@ jobs:
         with:
           gradle-version: 8.5
 
-      - name: Eksik Dosyalari Olustur
+      - name: Eksik Dosyalari Duzelt
         run: |
-          echo "=== ONCE NE VAR ===" || true
-          ls -la || true
-          echo "=== APP VAR MI? ===" || true
-          ls -la app/ || echo "APP KLASORU YOK!" || true
-          if [ ! -f settings.gradle ] && [ ! -f settings.gradle.kts ]; then
-            echo "settings.gradle YOK, olusturuluyor..."
-            echo "include ':app'" > settings.gradle
-            echo "rootProject.name = 'Sermaye'" >> settings.gradle
-            cat settings.gradle || true
-          else
-            echo "settings.gradle VAR" || true
-            cat settings.gradle || true
-          fi
-          if [ ! -f build.gradle ] && [ ! -f build.gradle.kts ]; then
-            echo "ROOT build.gradle YOK, olusturuluyor..."
-            echo "plugins { id 'com.android.application' version '8.2.2' apply false }" > build.gradle
-          fi
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "Sermaye"
+          include ':app'
+          EOF
+          cat app/build.gradle || cat app/build.gradle.kts || echo "APP BUILD YOK!"
 
       - name: APK Derle
         run: gradle assembleDebug --no-daemon --console=plain
