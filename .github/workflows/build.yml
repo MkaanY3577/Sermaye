@@ -11,8 +11,6 @@ jobs:
     env:
       JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
       GRADLE_OPTS: -Djava.awt.headless=true -Dorg.gradle.daemon=false
-      ANDROID_HOME: /usr/lib/android-sdk
-      ANDROID_SDK_ROOT: /usr/lib/android-sdk
 
     steps:
       - name: Kodu Cek
@@ -31,12 +29,12 @@ jobs:
 
       - name: Dosyalari Goster
         run: |
-          ls -la
-          echo "--- SDK kontrol ---"
-          ls $ANDROID_HOME || echo "SDK yok, diger yola bakiliyor"
-          ls /opt/android-sdk || ls /usr/local/lib/android/sdk || echo "SDK bulunamadi"
+          ls -la || true
+          echo "--- SDK ---"
+          echo "ANDROID_HOME=$ANDROID_HOME" || true
+          ls "$ANDROID_HOME" || true
           echo "--- app ---"
-          ls -la app/
+          ls -la app/ || true
 
       - name: APK Derle
         run: gradle assembleDebug --no-daemon --stacktrace
