@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
-      GRADLE_OPTS: -Djava.awt.headless=true -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2g
+      GRADLE_OPTS: -Djava.awt.headless=true -Dorg.gradle.daemon=false
 
     steps:
       - name: Kodu Cek
@@ -22,11 +22,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Gradle Izin Ver
-        run: chmod +x gradlew
+      - name: Gradle Kur
+        uses: gradle/actions/setup-gradle@v3
 
       - name: APK Derle
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: gradle assembleDebug --no-daemon --stacktrace
 
       - name: APK Yukle
         uses: actions/upload-artifact@v4
