@@ -11,13 +11,25 @@ jobs:
           java-version: '17'
       - name: Unzip and Build
         run: |
+          ls -la
           unzip -o sermaye.zip
-          DIR=$(find . -maxdepth 3 -name "gradlew" -exec dirname {} \; | head -n 1)
+          ls -la
+          find . -maxdepth 4 -name "gradlew" | head
+          DIR=$(find . -maxdepth 4 -name "gradlew" -exec dirname {} \; | head -n 1)
+          if [ -z "$DIR" ]; then DIR="."; fi
           echo "Proje klasoru: $DIR"
           cd "$DIR"
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          ls -la
+          if [ -f "gradlew" ]; then
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          else
+            echo "gradlew yok, sistem gradle ile deniyorum"
+            sudo apt-get update -qq && sudo apt-get install -y -qq gradle
+            gradle assembleDebug --no-daemon
+          fi
           find . -name "app-debug.apk" -exec cp {} $GITHUB_WORKSPACE/ \;
+          ls -lh $GITHUB_WORKSPACE/*.apk
       - uses: actions/upload-artifact@v4
         with:
           name: sermaye-apk
