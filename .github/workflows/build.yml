@@ -1,7 +1,9 @@
 name: Build APK
 on: [push, workflow_dispatch]
-jobs:
-  build:
+jobs:env:
+  JAVA_TOOL_OPTIONS: -Djava.awt.headless=true
+  GRADLE_OPTS: -Djava.awt.headless=true -Dorg.gradle.daemon=false
+  build:./gradlew assembleDebug --no-daemon
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
